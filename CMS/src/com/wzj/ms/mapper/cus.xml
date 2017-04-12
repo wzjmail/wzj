@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace和定义的Mapper接口对应，并实现其中的方法 -->
+<mapper namespace="Cus">
+
+<select id="list" parameterType="Cus" resultType="Cus">
+
+SELECT
+  `id`, `name`, `tel`,`type`
+FROM zj_customer where 
+1=1
+
+			<if test="search!=null and search!=''">    <!-- test= 用于检测一个字符串是否匹配某个模式 -->
+			and (name like CONCAT(CONCAT('%', #{search}), '%'))
+		</if>
+		<if test="role>=0">
+			and type=#{role}
+		</if>
+</select>
+
+
+
+<!-- 
+SELECT
+  `id`, `name`, `price`,`type`,`storage`
+FROM zj_customer where 
+1=1
+
+		<if test="search!=null and search!=''">   
+			 and (name like CONCAT(CONCAT('%', #{search}), '%'))
+		</if>
+ -->
+
+
+	<!-- 删除一条by Id -->
+	<delete id="delete" parameterType="Cus">
+		delete from zj_customer where
+		id=#{id}
+	</delete>
+
+	
+	<!-- 添加新用户 -->
+	<insert id="insertCus" parameterType="Cus">
+		insert into zj_customer
+		(id,name,tel,type) values
+		(#{id},#{name},#{tel},#{type})
+	</insert>
+	
+		<!-- 获取登陆账户信息 -->
+		<select id="find" parameterType="Cus" resultType="Cus">
+		SELECT id,name,tel,type
+		FROM zj_customer WHERE
+		id=#{id}
+		<if test="name!=null and name!='' ">
+			and name=#{name}
+		</if>
+	</select>
+		
+	
+	
+	<!-- 获取全部用户表 -->
+	<select id="allcuslist" parameterType="Cus" resultType="Cus">
+		SELECT
+		* FROM zj_customer
+	</select>
+	
+	<!-- 用户名查重 -->
+	<select id="findCusname" parameterType="Cus" resultType="Cus">
+		SELECT name
+		FROM zj_customer WHERE name=#{name}
+	</select>
+	
+	<!-- 修改用户 -->
+	<update id="update" parameterType="Cus">
+		update zj_customer set id=#{id}
+		
+		<if test="name!=null and name!='' ">
+			,name=#{name}
+		</if>
+		<if test="tel!=null and tel!='' ">
+			,tel=#{tel}
+		</if>
+	
+		<if test="type>=0 ">
+			,type=#{type}
+		</if>
+		
+		where id=#{id}
+	</update>
+	
+
+	
+</mapper>

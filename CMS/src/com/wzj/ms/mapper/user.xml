@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace和定义的Mapper接口对应，并实现其中的方法 -->
+<mapper namespace="User">
+	<!-- 登录-->
+	<select id="login" parameterType="User" resultType="User">
+		SELECT * FROM
+		zj_user WHERE username=#{username} and password=#{password}
+	</select>
+	<select id="list" parameterType="User" resultType="User">
+		SELECT id,username,PASSWORD,NAME,role,time,dept
+		FROM zj_user WHERE
+		1=1
+		<if test="dept!=null and dept!=0">
+			and dept=#{dept}
+		</if>
+		<!-- 根据关键字查询-->
+		<if test="search!=null and search!=''">    <!-- test= 用于检测一个字符串是否匹配某个模式 -->
+			and (name like CONCAT(CONCAT('%', #{search}), '%') or
+			username like CONCAT(CONCAT('%', #{search}), '%') )
+		</if>
+		<if test="role>=0 ">
+			and role=#{role}
+		</if>
+		<if test="id!=null and id!= '' ">
+			and id=#{id}
+		</if>
+		order by time desc
+	</select>
+
+	<!-- 修改用户 -->
+	<update id="update" parameterType="User">
+		update zj_user set id=#{id}
+		<if test="username!=null and username!='' ">
+			,username=#{username}
+		</if>
+		<if test="name!=null and name!='' ">
+			,name=#{name}
+		</if>
+		<if test="password!=null and password!='' ">
+			,password=#{password}
+		</if>
+		<if test="dept!='' and dept!=null ">
+			,department=#{dept}
+		</if>
+		<if test="role>=0 ">
+			,role=#{role}
+		</if>
+		where id=#{id}
+	</update>
+	<!-- 删除一条by Id -->
+	<delete id="delete" parameterType="user">
+		delete from zj_user where
+		id=#{id}
+	</delete>
+
+	<!-- 获取登陆账户信息 -->
+	<select id="find" parameterType="User" resultType="User">
+		SELECT id,username,NAME,role,password, dept
+		FROM zj_user WHERE
+		id=#{id}
+		<if test="username!=null and username!='' ">
+			and username=#{username}
+		</if>
+	</select>
+	<!-- 用户名查重 -->
+	<select id="findUsername" parameterType="User" resultType="User">
+		SELECT *
+		FROM zj_user WHERE username=#{username}
+	</select>
+	
+
+	<!-- 获取全部用户表 -->
+	<select id="alluserlist" parameterType="User" resultType="User">
+		SELECT
+		* FROM zj_user
+	</select>
+	<!-- 获取全部普通用户 -->
+	<select id="userlist" parameterType="User" resultType="User">
+		SELECT *
+		FROM zj_user where role=0
+	</select>
+	<!-- 查询旗下顾客Rate已完成
+	<select id="findCusRate" parameterType="User" resultType="int">
+		SELECT
+		COUNT(nRate) nRate FROM( SELECT COUNT(lo.id) nRate FROM (SELECT
+		id,MAX(rate) FROM zj_customer_log GROUP BY id) lo
+		LEFT JOIN zj_customer
+		cus ON cus.id=lo.id
+		LEFT JOIN zj_user us ON
+		us.sign=cus.belongs
+		AND
+		us.name =#{name}
+		GROUP BY us.id)aa
+	</select>
+	
+	
+	 -->
+	
+	<!-- 查询新任务 
+	
+	<select id="findNewCus" parameterType="User" resultType="int">
+		SELECT
+		COUNT(look) AS look FROM zj_customer WHERE belongs=#{sign} and look=0
+	</select>-->
+	
+	<!-- 查询所有客户数目 -->
+	<select id="findAllCus" parameterType="User" resultType="int">
+		SELECT
+		COUNT(id) FROM(SELECT COUNT(id) AS id FROM zj_customer WHERE
+		belongs=#{sign} GROUP BY id)aa
+	</select>
+	<!-- 查询旗下顾客全部
+	
+	
+	<select id="findCusRateAll" parameterType="User" resultType="int">
+		SELECT count(id) aRate FROM zj_customer WHERE belongs=#{sign}
+	</select>
+	 -->
+	
+	<!-- 查询新回访 
+	
+	<select id="findNewRet" parameterType="User" resultType="int">
+		SELECT
+		COUNT(tel) AS look FROM zj_customer WHERE restatus = 0
+	</select>-->
+	
+	<!-- 查询回访完成 -->
+	<select id="findAllRetNum" parameterType="User" resultType="int">
+		select count(tel) as allnum from(
+		select cus.tel from zj_customer cus
+		)aa
+	</select>
+<!--  
+ 过期提醒
+	<select id="finddt" parameterType="User" resultType="int">
+		SELECT COUNT(cc.id) FROM (SELECT cu.*,bb.time times FROM zj_customer cu LEFT
+		JOIN (SELECT aa.id,MAX(aa.time) TIME FROM (SELECT id,TIME FROM
+		zj_customer_log ORDER BY TIME DESC)aa GROUP BY id)bb ON bb.id=cu.id
+		WHERE ((bb.time&lt;DATE_SUB(NOW(),INTERVAL 3 DAY) AND cu.type=1) OR
+		(bb.time&lt;DATE_SUB(NOW() ,INTERVAL 5 DAY) AND cu.type=2) OR
+		(bb.time&lt;DATE_SUB(NOW() ,INTERVAL 7 DAY) AND cu.type=3)
+		OR(bb.time&lt;DATE_SUB(NOW() ,INTERVAL 10 DAY) AND (cu.type=4 OR
+		cu.type=5)) OR (bb.time&lt;DATE_SUB(NOW() ,INTERVAL 3 DAY) AND
+		cu.type=6) OR (bb.time&lt;DATE_SUB(NOW() ,INTERVAL 15 DAY) AND
+		cu.type=7)) and cu.belongs=#{sign} and status = 0)cc
+	</select>
+
+-->
+	
+	<!-- 添加新用户 -->
+	<insert id="insertUser" parameterType="User">
+		insert into zj_user
+		(id,username,password,name,time,role,dept) values
+		(#{id},#{username},#{password},#{name},#{time},#{role},#{dept})
+	</insert>
+</mapper>

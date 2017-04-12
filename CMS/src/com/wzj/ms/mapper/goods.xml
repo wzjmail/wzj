@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace和定义的Mapper接口对应，并实现其中的方法 -->
+<mapper namespace="Goods">
+
+<select id="list" parameterType="Goods" resultType="Goods">
+
+SELECT
+  `id`, `name`, `price`,`type`,`storage`
+FROM zj_goods where 
+1=1
+
+		<if test="search!=null and search!=''">   
+			 and (name like CONCAT(CONCAT('%', #{search}), '%'))
+		</if>
+		<if test="role>=0">
+			and type=#{role}
+		</if>
+		
+</select>
+
+
+
+<!-- 
+SELECT
+  `id`, `name`, `price`,`type`,`storage`
+FROM zj_goods where 
+1=1
+
+		<if test="search!=null and search!=''">   
+			 and (name like CONCAT(CONCAT('%', #{search}), '%'))
+		</if>
+ -->
+
+
+	<!-- 删除一条by Id -->
+	<delete id="delete" parameterType="Goods">
+		delete from zj_goods where
+		id=#{id}
+	</delete>
+
+	
+	<!-- 添加新用户 -->
+	<insert id="insertGoods" parameterType="Goods">
+		insert into zj_goods
+		(id,name,price,type,storage) values
+		(#{id},#{name},#{price},#{type},#{storage})
+	</insert>
+	
+		<!-- 获取登陆账户信息-->
+			<select id="find" parameterType="Goods" resultType="Goods">
+		SELECT id,name,price,type,storage
+		FROM zj_goods WHERE
+		id=#{id}
+		<if test="name!=null and name!='' ">
+			and name=#{name}
+		</if>
+	</select>
+		
+		<!-- 获取登陆账户信息-->
+			<select id="findr" parameterType="Goods" resultType="Goods">
+		SELECT id,name
+		FROM zj_goods 
+	
+		
+	</select>
+		 
+
+	
+	<!-- 获取全部用户表 -->
+	<select id="allgoodslist" parameterType="Goods" resultType="Goods">
+		SELECT
+		* FROM zj_goods
+	</select>
+	
+	<!-- 用户名查重 -->
+	<select id="findGoodsname" parameterType="Goods" resultType="Goods">
+		SELECT name
+		FROM zj_goods WHERE name=#{name}
+	</select>
+	
+	
+		
+	
+	<!-- 修改用户 -->
+	<update id="update" parameterType="Goods">
+		update zj_goods set id=#{id}
+		
+		<if test="name!=null and name!='' ">
+			,name=#{name}
+		</if>
+		<if test="price>=0">
+			,price=#{price}
+		</if>
+		<if test="type>=0 ">
+			,type=#{type}
+		</if>
+		<if test="storage>=0 ">
+			,storage=#{storage}
+		</if>
+		where id=#{id}
+	</update>
+	
+
+	
+</mapper>

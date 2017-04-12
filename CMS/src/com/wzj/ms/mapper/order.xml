@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace和定义的Mapper接口对应，并实现其中的方法 -->
+<mapper namespace="Order">
+
+	<select id="list" parameterType="Order" resultType="Order">
+		select od.* ,od.utime,cus.name cname,cusid,goodsid,goods.name
+		gname from zj_orderlog od left join zj_customer cus on od.cusid=cus.id
+		left join zj_goods goods on od.goodsid=goods.id left join zj_provider prov on od.provid=prov.id
+		where 1=1
+
+		<if test="search!=null and search!=''">    <!-- test= 用于检测一个字符串是否匹配某个模式 -->
+			and (cus.name like CONCAT(CONCAT('%', #{search}), '%') or
+			goods.name
+			like CONCAT(CONCAT('%', #{search}), '%') )
+		</if>
+		<if test="search!=null and search!=''">    <!-- test= 用于检测一个字符串是否匹配某个模式 -->
+			and (prov.name like CONCAT(CONCAT('%', #{search}), '%') or
+			prov.name
+			like CONCAT(CONCAT('%', #{search}), '%') )
+		</if>
+		<!-- -->
+		
+
+
+	</select>
+
+
+	<select id="listt" parameterType="Goods" resultType="Goods">
+		select
+		id,price,NAME gname from zj_goods where name=#{gname}
+	</select>
+
+	<select id="lists" parameterType="Cus" resultType="Cus">
+		select * from
+		zj_customer where name=#{cname}
+	</select>
+
+	<!-- SELECT `id`, `name`, `price`,`type`,`storage` FROM zj_orderlog where 
+		1=1 <if test="search!=null and search!=''"> and (name like CONCAT(CONCAT('%', 
+		#{search}), '%')) </if> -->
+
+
+	<!-- 删除一条by Id -->
+	<delete id="delete" parameterType="order">
+		delete from zj_orderlog where
+		orderid=#{orderid}
+	</delete>
+
+
+
+	<!-- 添加新用户<insert id="insertOrder" parameterType="Order"> insert into zj_orderlog 
+		od left join zj_customer cus on od.cusid=cus.id left join zj_goods goods 
+		on od.goodsid=goods.id (,goods.name,cus.name,oprice,nprice,amount,type,time) 
+		values (#{goods.name},#{cus.name},#{oprice},#{nprice},#{amount},#{type},#{time}) 
+		</insert> -->
+
+	<insert id="insertOrder" parameterType="Order">
+		insert into zj_orderlog
+		(orderid,goodsid,cusid,time,state,oprice,nprice,amount,type) values
+		(#{orderid},#{goodsid},#{cusid},#{time},#{state},#{oprice},#{nprice},#{amount},#{type});
+
+	</insert>
+
+	<!-- 获取登陆账户信息<select id="find" parameterType="Order" resultType="Order"> 
+		select od.*,cus.name cname,goods.name gname from zj_oderlog od left join 
+		zj_customer cus on od.cusid=cus.id left join zj_goods goods on od.goodsid=goods.id 
+		WHERE orderid=#{orderid} </select> -->
+
+
+	<!-- 获取信息 -->
+	<select id="findd" parameterType="Order" resultType="Order">
+		SELECT od.*,cus.name cname,goods.name gname FROM zj_orderlog od LEFT
+		JOIN zj_customer cus ON od.cusid=cus.id LEFT JOIN zj_goods goods ON
+		od.goodsid=goods.id
+		where 1=1
+		<if test="orderid!=null and orderid!='' ">
+			and orderid=#{id}
+		</if>
+
+
+	</select>
+	<select id="find" parameterType="Order" resultType="Order">
+		SELECT
+		od.*,cus.name cname,goods.name gname ,goodsid,cusid FROM zj_orderlog
+		od LEFT JOIN zj_customer cus ON od.cusid=cus.id LEFT JOIN zj_goods
+		goods ON od.goodsid=goods.id
+		where orderid=#{id}
+
+
+	</select>
+
+
+	<!-- 获取商品/单位ID<select id="findr" parameterType="Order" resultType="Order"> 
+		select cus.id cid,goods.id gid,oprice from zj_oderlog od left join zj_customer 
+		cus on od.cusid=cus.id left join zj_goods goods on od.goodsid=goods.id WHERE 
+		1=1 <if test="cname!=null and cname!='' "> and cus.name=#{cname} </if> <if 
+		test="gname!=null and gname!='' "> and goods.name=#{gname} </if> </select> -->
+
+
+	<select id="goodslist" parameterType="Goods" resultType="Goods">
+		select
+		name gname , price, id from zj_goods
+
+	</select>
+	<select id="cuslist" parameterType="Cus" resultType="Cus">
+		select name
+		cname ,id from zj_customer
+
+	</select>
+
+
+
+	<!-- 获取全部用户表 -->
+	<select id="allorderlist" parameterType="Order" resultType="Order">
+		select od.*,cus.name cname,cusid,goods.name gname,goodsid from
+		zj_orderlog od left join zj_customer cus on od.cusid=cus.id left join
+		zj_goods goods on od.goodsid=goods.id
+
+	</select>
+
+	<!-- 用户名查重<select id="findOrdername" parameterType="Order" resultType="Order"> 
+		SELECT name FROM zj_orderlog WHERE name=#{name} </select> -->
+
+
+	<!-- 修改用户 -->
+	<update id="update" parameterType="Order">
+		update zj_orderlog set orderid=#{id}
+
+		<if test="state!=null and state!='' ">
+			,state=#{state}
+		</if>
+		<if test="nprice>=0 ">
+			,nprice=#{nprice}
+		</if>
+		<if test="oprice!=null and oprice!='' ">
+			,oprice=#{oprice}
+		</if>
+		<if test="amount!=null and amount!='' ">
+			,amount=#{amount}
+		</if>
+		<if test="type>=0 ">
+			,type=#{type}
+		</if>
+		<if test="time!=null and time!='' ">
+			,utime=#{time}
+		</if>
+
+		where orderid=#{id}
+	</update>
+	<!-- 修改商品库存 add -->
+	<update id="update1" parameterType="Goods">
+
+		update zj_goods set
+		oamount=1             <!-- oamount类似于where1=1的作用，防止语句错误 -->
+		<if test="state==1">
+			<if test="type==1">
+
+				,storage=storage-#{amount}
+			</if>
+			<if test="type==0">
+				,storage=storage+#{amount}
+			</if>
+
+		</if>
+
+		where id=#{goodsid}
+		<!-- 在<when test=""></when>标签中接收参数的时候test中去掉#{} 直接写上参数的名称就可以了<if test=""></if>也是一样！！！！ 
+			而不是test="{type}==1" -->
+
+
+
+	</update>
+	<!-- 修改商品库存update -->
+	<update id="update2" parameterType="Goods">
+
+		update zj_goods set
+		oamount=1            
+		<if test="state==1">
+			<if test="type==1">
+
+				,storage=storage-#{amount}
+			</if>
+			<if test="type==0">
+				,storage=storage+#{amount}
+			</if>
+
+		</if>
+
+		where id=#{goodsid}
+	</update>
+
+</mapper>
