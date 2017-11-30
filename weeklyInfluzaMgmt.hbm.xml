@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="buaa.sem.ps.mainBaseData.model.weeklyInfluzaMgmt" table="t_ili_info" lazy="false">
+		<id name="id" type="int">
+			<generator class="increment" />
+		</id>
+
+		<property name="weekNo" type="string">
+			<column name="week_no"  not-null="true" />
+		</property>
+		
+		<property name="sourthIli" type="double">
+			<column name="sourth_ili"  not-null="true" />
+		</property>
+		
+		<property name="northIli" type="double">
+			<column name="north_ili"  not-null="true" />
+		</property>
+		
+		<property name="nationIli" type="double">
+			<column name="nation_ili"  not-null="true" />
+		</property>
+		<property name="remark" type="string">
+			<column name="remark"  not-null="true" />
+		</property>
+		
+	</class>
+</hibernate-mapping>

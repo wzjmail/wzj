@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<!-- Spring的主要配置文件 -->
+	
+	<!-- 
+		导入属性文件systemConfig.properties 进行参数配置
+	 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:systemConfig.properties" />
+	</bean>
+	
+	<!-- 
+		配置数据源，此处采取开源数据库连接池Druid，注意buaa.sem.ps.base.db.DBConnect里面也有一份配置，不知道之前为什么是这样的设计，所以如果要修改
+		记得同时修改DBConnect中的信息
+	 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${db_driver}" />
+		<property name="url" value="${db_conn}" />
+	    <property name="username" value="${db_username}" />
+	    <property name="password" value="${db_password}" />
+	    <property name="filters" value="stat,log4j" />
+	    <property name="maxActive" value="20" />
+	    <property name="initialSize" value="2" />
+	    <property name="maxWait" value="5000" />
+	    <property name="minIdle" value="1" />
+	    <property name="timeBetweenEvictionRunsMillis" value="60000" />
+	    <property name="minEvictableIdleTimeMillis" value="300000" />
+	    <property name="validationQuery" value="SELECT 'x' FROM DUAL" />
+	    <property name="testWhileIdle" value="true" />
+	    <property name="testOnBorrow" value="false" />
+	    <property name="testOnReturn" value="false" />
+	    <!-- 
+	    <property name="poolPreparedStatements" value="true" />
+	    <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		 -->
+	</bean>
+	
+	<!-- 
+		配置sessionFactory
+	 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="mappingResources">
+			<list>
+				<!-- Add list of .hbm.xml files here -->
+				<value>buaa/sem/ps/dictionary/model/Dictionary.hbm.xml</value>
+				<value>buaa/sem/ps/dictionary/model/DictionaryDir.hbm.xml</value>
+				<value>buaa/sem/ps/user/model/User.hbm.xml</value>
+				<value>buaa/sem/ps/roleRule/model/RoleRule.hbm.xml</value>
+				
+				<!-- Add by leezhen files here -->
+				<value>buaa/sem/ps/mainBaseData/model/DiseaseInfo.hbm.xml</value>
+				<!-- Add by wx files here -->
+				<value>buaa/sem/ps/mainBaseData/model/DiseaseOral.hbm.xml</value>
+				<!-- Add by fc files here -->
+				<value>buaa/sem/ps/mainBaseData/model/DiseaseSymptoms.hbm.xml</value>
+				
+				<!-- Add by mkx files here -->
+				<value>buaa/sem/ps/mainBaseData/model/SympOralCorres.hbm.xml</value>
+			    <!-- Add by lal files here -->
+			    <value>buaa/sem/ps/mainBaseData/model/DiseSympCorres.hbm.xml</value>
+			    <!-- Add by lyt files here -->
+			    <value>buaa/sem/ps/dataPreprocess/model/dataSegment.hbm.xml</value>
+			    <value>buaa/sem/ps/dataPreprocess/model/dailyWord.hbm.xml</value>
+			    <value>buaa/sem/ps/mainBaseData/model/weeklyManagement.hbm.xml</value>
+			    <value>buaa/sem/ps/dataPreprocess/model/weeklyWord.hbm.xml</value>
+
+			    <value>buaa/sem/ps/dataPreprocess/model/quarterlyWord.hbm.xml</value>
+			    <value>buaa/sem/ps/dataPreprocess/model/yearlyWord.hbm.xml</value>
+			   
+
+			    <!-- Add by ygj files here -->
+			    <value>buaa/sem/ps/dataGrabManagement/model/indirectGrab.hbm.xml</value>
+
+			    <value>buaa/sem/ps/dataGrabManagement/model/TempFile.hbm.xml</value>
+    
+			    <!-- Add by clx files here -->
+			    <value>buaa/sem/ps/dataPreprocess/model/SegmentedBlog.hbm.xml</value>
+			    <value>buaa/sem/ps/dataGrabManagement/model/Blog.hbm.xml</value>
+			    <value>buaa/sem/ps/mainBaseData/model/MonthMgmt.hbm.xml</value>
+			    <value>buaa/sem/ps/dataPreprocess/model/MonthlyWord.hbm.xml</value>
+			    <value>buaa/sem/ps/visualManagement/model/DailyMap.hbm.xml</value>
+			    <value>buaa/sem/ps/visualManagement/model/Blogger.hbm.xml</value>
+			    
+			     <!-- Add by jyw files here -->
+			    <value>buaa/sem/ps/visualManagement/model/WordDailyStatistics.hbm.xml</value>
+			    <value>buaa/sem/ps/mainBaseData/model/Quarter.hbm.xml</value>
+			    <value>buaa/sem/ps/mainBaseData/model/Year.hbm.xml</value>
+			    
+			    <!-- Add by wzj files here -->
+				<value>buaa/sem/ps/stuff/model/StuffInfo.hbm.xml</value>
+			   <value>buaa/sem/ps/mainBaseData/model/weeklyInfluzaMgmt.hbm.xml</value>
+			   
+			   
+			   
+
+			</list>
+		</property>
+		
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.connection.release_mode">after_transaction</prop>
+				<prop key="hibernate.hbm2ddl.auto">none</prop>
+				<prop key="hibernate.show_sql">True</prop>
+			</props>
+		</property>
+		
+	</bean>
+	
+	<!-- 
+		spring 管理 Hibernate 事务
+	-->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="txProxyTemplate" abstract="true"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="insert*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="login*">PROPAGATION_REQUIRED</prop>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="change*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="publicDao" class="buaa.sem.ps.base.dao.imp.PublicDaoImp">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="baseManager" class="buaa.sem.ps.base.manager.imp.BaseManagerImp">
+		<property name="publicDAO" ref="publicDao" />
+	</bean>
+	
+	<bean id="fileUploadDAO" class="buaa.mis.pm.hibernate.dao.imp.UploadFileDaoImp">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="uploadFileManager" parent="txProxyTemplate">
+		<property name="target">
+			<bean class="buaa.mis.pm.manager.imp.UploadFileManagerImp">
+				<property name="uploadFileDao">
+					<bean class="buaa.mis.pm.hibernate.dao.imp.UploadFileDaoImp">
+						<property name="sessionFactory">
+							<ref local="sessionFactory" />
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- 缓存 -->
+	<!-- 向缓存中初始化字典表、角色权限 -->
+	<bean id="cacheManage" class="buaa.sem.ps.abstractClass.CacheManage">
+		<property name="cacheBeans">
+			<map>
+				<entry>
+					<key>
+						<value>D2RCach</value>
+					</key>
+					<ref bean="roleRuleCach" />
+				</entry>
+				<entry>
+					<key>
+						<value>dicCach</value>
+					</key>
+					<ref bean="dictionaryCach" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="roleRuleCach" class="buaa.sem.ps.abstractClass.RoleRuleCachPolicy">
+		<property name="manageBean">
+			<ref local="roleRuleManageProxy" />
+		</property>
+		<property name="policyBean">
+			<ref local="roleRuleManageProxy" />
+		</property>
+	</bean>
+	
+	<bean id="roleRuleManageProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>buaa.sem.ps.roleRule.manage.RoleRuleManage</value>
+				<value>buaa.sem.ps.abstractClass.RefreshPolicy</value>
+			</list>
+		</property>
+		<property name="target" ref="roleRuleManage" />
+		<property name="interceptorNames">
+			<list>
+				<value>roleRuleAfterAdvice</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="roleRuleAfterAdvice" class="buaa.sem.ps.roleRule.RoleRuleAfterAdvice">
+		<property name="cachPolicy" ref="cacheManage" />
+	</bean>
+	
+	<bean id="roleRuleManage" parent="txProxyTemplate">
+		<property name="target">
+			<ref local="roleRoleManageTarget" />
+		</property>
+	</bean>
+	
+	<bean id="roleRoleManageTarget" class="buaa.sem.ps.roleRule.manage.imp.RoleRuleManageImp">
+		<property name="dao">
+			<ref local="roleRuleDao" />
+		</property>
+	</bean>
+	
+	<bean id="roleRuleDao" class="buaa.sem.ps.roleRule.dao.imp.RoleRuleDaoImp">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="dictionaryCach" class="buaa.sem.ps.abstractClass.DictionaryCachPolicy">
+		<property name="dirBean">
+			<ref local="dictionaryDirDAO" />
+		</property>
+		<property name="dicBean">
+			<ref local="dictionaryManageProxy" />
+		</property>
+		<property name="policyBean">
+			<ref local="dictionaryManageProxy" />
+		</property>
+	</bean>
+	
+	<bean id="dictionaryManage" parent="txProxyTemplate">
+		<property name="target">
+			<ref local="dictionaryManageTarget" />
+		</property>
+	</bean>
+	
+	<bean id="dictionaryManageTarget" class="buaa.sem.ps.dictionary.manage.imp.DictionaryManageImp">
+		<property name="dictionaryDAO">
+			<ref local="dictionaryDAO" />
+		</property>
+	</bean>
+	
+	<bean id="dictionaryDAO" class="buaa.sem.ps.dictionary.dao.imp.DictionaryDaoImp">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="basicDataDAO" class="buaa.sem.ps.basicData.dao.imp.BasicDataDAOImp">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+
+    <!-- ConsistBean类中直接调用DAO -->
+	<bean id="consistBean" parent="txProxyTemplate">
+		<property name="target">
+			<ref local="basicDataDAO" />
+		</property>
+	</bean>
+	
+	<bean id="dictionaryManageProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>buaa.sem.ps.dictionary.dao.DictionaryManage</value>
+				<value>buaa.sem.ps.abstractClass.RefreshPolicy</value>
+			</list>
+		</property>
+		<property name="target" ref="dictionaryManage" />
+		<property name="interceptorNames">
+			<list>
+				<value>dictionaryAfterAdvice</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dictionaryAfterAdvice" class="buaa.sem.ps.dictionary.DictionaryAfterAdvice">
+		<property name="cachPolicy" ref="cacheManage" />
+		<property name="r2Bean" ref="roleRuleManage" />
+	</bean>
+	
+	<bean id="dictionaryDirDAO" parent="txProxyTemplate">
+		<property name="target">
+			<ref local="dictionaryDirDAOTarget" />
+		</property>
+	</bean>
+
+	<bean id="dictionaryDirDAOTarget" class="buaa.sem.ps.dictionary.dao.imp.DictionaryDirDaoImp">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="userServiceManage" parent="txProxyTemplate">
+		<property name="target">
+			<ref local="userServiceTarget" />
+		</property>
+	</bean>
+	
+	<bean id="userServiceTarget" class="buaa.sem.ps.user.manage.imp.UserManageImp">
+		<property name="userDao">
+			<bean class="buaa.sem.ps.user.dao.imp.UserDaoImp">
+				<property name="sessionFactory">
+					<ref local="sessionFactory" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="contextFilter" class="buaa.sem.ps.filter.SessionContextFilter">
+		<property name="factory" ref="AuthenticationFactory">
+		</property>
+	</bean>
+	
+	<!--查询引擎 -->
+	<bean id="searchEngin" class="buaa.sem.ps.base.dao.imp.JDBCSearchEngin">
+	</bean>
+	
+	<bean id="AuthenticationFactory" parent="txProxyTemplate">
+		<property name="target">
+			<bean class="buaa.sem.ps.auth.AuthenticationFactoryImp">
+				<property name="userService" ref="adminUserManageTarget"/>
+				<property name="searchBean" ref="searchEngin" />
+				<property name="searchRoles"
+					value="select roleId from t_adminUser_roles where username=?">
+
+				</property>
+				<property name="searchRules"
+					value="select b.ruleId from t_adminUser_roles a join t_role_rule b on a.roleId=b.roleId where username=?">
+
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="adminUserManageTarget" class="buaa.sem.ps.user.manage.imp.UserManageImp">
+		<property name="userDao">
+			<bean class="buaa.sem.ps.user.dao.imp.UserDaoImp">
+				<property name="sessionFactory">
+					<ref local="sessionFactory" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<import resource="leezhen/applicationContext-leezhen.xml"/>
+	<import resource="wx/applicationContext-wx.xml"/>
+	<import resource="mkx/applicationContext-mkx.xml"/>
+	<import resource="fc/applicationContext-fc.xml"/>
+	<import resource="lal/applicationContext-lal.xml"/>
+	<import resource="lyt/applicationContext-lyt.xml"/>
+	<import resource="ygj/applicationContext-ygj.xml"/>
+	<import resource="clx/applicationContext-clx.xml"/>
+	<import resource="jyw/applicationContext-jyw.xml"/>
+	<import resource="wzj/applicationContext-wzj.xml"/>
+
+
+</beans>

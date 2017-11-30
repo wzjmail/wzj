@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean name="/validateAdmin" class="buaa.sem.ps.user.action.UserServiceAction">
+		<property name="userManage" ref="userServiceManage" />
+	</bean>
+	
+	<bean name="/private/changePWD" class="buaa.sem.ps.user.action.UserServiceAction">
+		<property name="userManage" ref="userServiceManage" />
+	</bean>
+	
+	<bean name="/admin/user" class="buaa.sem.ps.user.action.UserServiceAction">
+		<property name="userManage" ref="userServiceManage" />
+	</bean>
+	
+	<bean name="/admin/userAdmin" class="buaa.sem.ps.user.action.UserServiceAction">
+		<property name="userManage" ref="userServiceManage" />
+	</bean>
+	
+	<bean name="/admin/roleRuleAdmin" class="buaa.sem.ps.roleRule.action.RoleRuleAction">
+		<property name="manageBean" ref="roleRuleManageProxy" />
+	</bean>
+	
+	<bean name="/admin/dictionaryDirAdmin" class="buaa.sem.ps.dictionary.action.DictionaryDirAction"
+		singleton="false">
+		<property name="manageBean" ref="dictionaryDirDAO"></property>
+	</bean>
+	
+	<bean name="/admin/dictionaryAdmin" class="buaa.sem.ps.dictionary.action.DictionaryAction"
+		singleton="false">
+		<property name="dictionaryManage" ref="dictionaryManageProxy" />
+		<property name="dictionaryDirDAO" ref="dictionaryDirDAO" />
+	</bean>
+	
+	<bean name="/admin/sysSettings" class="buaa.sem.ps.basicData.action.BasicDataAction">
+		<property name="basicDataDAO" ref="basicDataDAO" />
+	</bean>
+	
+	<bean name="/pages/uploadfile" class="buaa.mis.pm.struts.action.UploadFileAction">
+		<property name="uploadFileManager" ref="uploadFileManager" />
+		<property name="fileUploadDAO" ref="fileUploadDAO"></property>
+	</bean>
+</beans>

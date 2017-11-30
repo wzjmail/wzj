@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+    "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+	<form-beans>
+		<form-bean name="adminUserForm" type="buaa.sem.ps.user.model.UserForm"></form-bean>
+		<form-bean name="userSearchForm" type="org.apache.struts.validator.DynaValidatorForm">
+			<form-property name="userName" type="java.lang.String" initial="" />
+			<form-property name="realName" type="java.lang.String" initial="" />
+			<form-property name="flag" type="java.lang.Integer" initial="0" />
+			<form-property name="page" type="java.lang.Integer" initial="1" />
+		</form-bean>
+		
+		<form-bean name="dictionaryDirForm" type="buaa.sem.ps.dictionary.model.DictionaryDirForm"></form-bean>
+		<form-bean name="dictionaryForm" type="org.apache.struts.validator.DynaValidatorForm">
+			<form-property name="dictionary" type="buaa.sem.ps.dictionary.model.Dictionary" />
+		</form-bean>
+		
+	</form-beans>
+
+	<global-forwards>
+		<forward name="error" path="/error.jsp" redirect="true" />
+	</global-forwards>
+
+	<action-mappings>
+		<action path="/validateAdmin" 
+				name="adminUserForm" 
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+		</action>
+	
+		<action path="/private/changePWD" 
+				name="adminUserForm" 
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+		</action>
+		
+		<action path="/admin/userAdmin" 
+				name="adminUserForm" 
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+				
+			<forward name="modify" path="/admin/user/adminUser_modi.jsp" />
+			<forward name="toAdd" path="/admin/user/adminUser_new.jsp" />
+		</action>
+		
+		<action path="/admin/user" 
+				name="userSearchForm" 
+				validate="false"
+				scope="session"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+			<forward name="list" path="/admin/user/adminUser_list.jsp" />
+		</action>
+		
+		<action path="/admin/roleRuleAdmin" 
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+			<forward name="list" path="/admin/roleRule/roleRule_list.jsp" />	
+		</action>
+		
+		<action path="/admin/dictionaryDirAdmin" 
+				name="dictionaryDirForm"
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+			<forward name="list" path="/admin/dic/dic_list.jsp"></forward>
+			<forward name="toAdd" path="/admin/dic/dic_new.jsp"></forward>
+			<forward name="toModify" path="/admin/dic/dic_modi.jsp"></forward>
+		</action>
+		
+		<action path="/admin/dictionaryAdmin" 
+				name = "dictionaryForm"
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+			<forward name="list" path="/admin/dic/dictionary_list.jsp"></forward>
+			<forward name="toAdd" path="/admin/dic/dictionary_new.jsp"></forward>
+			<forward name="toModify" path="/admin/dic/dictionary_modi.jsp"></forward>
+		</action>
+		
+		<action path="/admin/sysSettings"
+				validate="false"
+				type="org.springframework.web.struts.DelegatingActionProxy"
+				parameter="method">
+			<forward name="sysSettings" path="/admin/settings.jsp"></forward>
+		</action>
+	</action-mappings>
+	
+	<!-- 
+		将struts交由spring来管理 
+	-->
+	<plug-in className="org.springframework.web.struts.ContextLoaderPlugIn">
+		<set-property property="contextConfigLocation"
+			value="/WEB-INF/applicationContext.xml,
+                   /WEB-INF/action-servlet.xml,
+                   /WEB-INF/leezhen/applicationContext-leezhen.xml,
+                   /WEB-INF/leezhen/action-servlet-leezhen.xml,
+                   /WEB-INF/wx/applicationContext-wx.xml,
+                   /WEB-INF/wx/action-servlet-wx.xml,
+                   /WEB-INF/mkx/applicationContext-mkx.xml,
+                   /WEB-INF/mkx/action-servlet-mkx.xml,
+                   /WEB-INF/fc/applicationContext-fc.xml,
+                   /WEB-INF/fc/action-servlet-fc.xml,
+                   /WEB-INF/lal/applicationContext-lal.xml,
+                   /WEB-INF/lal/action-servlet-lal.xml,
+                   /WEB-INF/ygj/applicationContext-ygj.xml,
+                   /WEB-INF/ygj/action-servlet-ygj.xml,
+                   /WEB-INF/lyt/applicationContext-lyt.xml,
+                   /WEB-INF/lyt/action-servlet-lyt.xml,
+                   /WEB-INF/clx/applicationContext-clx.xml,
+                   /WEB-INF/clx/action-servlet-clx.xml,
+                   /WEB-INF/jyw/applicationContext-jyw.xml,
+                   /WEB-INF/jyw/action-servlet-jyw.xml,
+                    /WEB-INF/wzj/applicationContext-wzj.xml,
+                   /WEB-INF/wzj/action-servlet-wzj.xml"/>
+
+
+	</plug-in>
+	
+	
+	
+</struts-config>
+
+
